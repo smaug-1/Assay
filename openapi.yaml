@@ -222,6 +222,13 @@ paths:
     get:
       summary: Scan outcome and per-source failure counters
       description: Counters accumulated since process start.
+      parameters:
+        - in: query
+          name: format
+          schema:
+            type: string
+            enum: [prometheus]
+          description: Request format (e.g. prometheus for Prometheus text exposition format).
       responses:
         '200':
           description: A snapshot of the counters.
@@ -229,6 +236,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Metrics'
+            text/plain; version=0.0.4:
+              schema:
+                type: string
   /healthz:
     get:
       summary: Liveness check
