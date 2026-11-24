@@ -64,7 +64,7 @@ func parseVersion(v string) (parsedVersion, error) {
 				}
 				num, err := strconv.ParseUint(part, 10, 64)
 				if err != nil {
-					return parsedVersion{}, fmt.Errorf("%w: %v in %q", ErrInvalidVersion, err, v)
+					return parsedVersion{}, fmt.Errorf("%w: %w in %q", ErrInvalidVersion, err, v)
 				}
 				preParts = append(preParts, prereleasePart{isNum: true, num: num, str: part})
 			} else {
@@ -88,7 +88,7 @@ func parseVersion(v string) (parsedVersion, error) {
 		}
 		num, err := strconv.ParseUint(p, 10, 64)
 		if err != nil {
-			return parsedVersion{}, fmt.Errorf("%w: %v in %q", ErrInvalidVersion, err, v)
+			return parsedVersion{}, fmt.Errorf("%w: %w in %q", ErrInvalidVersion, err, v)
 		}
 		nums[i] = num
 	}

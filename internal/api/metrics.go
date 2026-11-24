@@ -162,25 +162,25 @@ func escapePrometheusLabelValue(s string) string {
 }
 
 func writePrometheusMetrics(w io.Writer, outcomes, sourceFailures map[string]uint64) {
-	fmt.Fprintln(w, "# HELP assay_scan_outcomes_total Scan results per outcome class.")
-	fmt.Fprintln(w, "# TYPE assay_scan_outcomes_total counter")
+	_, _ = fmt.Fprintln(w, "# HELP assay_scan_outcomes_total Scan results per outcome class.")
+	_, _ = fmt.Fprintln(w, "# TYPE assay_scan_outcomes_total counter")
 	classes := make([]string, 0, len(outcomes))
 	for c := range outcomes {
 		classes = append(classes, c)
 	}
 	sort.Strings(classes)
 	for _, c := range classes {
-		fmt.Fprintf(w, "assay_scan_outcomes_total{class=\"%s\"} %d\n", escapePrometheusLabelValue(c), outcomes[c])
+		_, _ = fmt.Fprintf(w, "assay_scan_outcomes_total{class=\"%s\"} %d\n", escapePrometheusLabelValue(c), outcomes[c])
 	}
 
-	fmt.Fprintln(w, "# HELP assay_source_failures_total Scans whose report recorded that source as not having answered.")
-	fmt.Fprintln(w, "# TYPE assay_source_failures_total counter")
+	_, _ = fmt.Fprintln(w, "# HELP assay_source_failures_total Scans whose report recorded that source as not having answered.")
+	_, _ = fmt.Fprintln(w, "# TYPE assay_source_failures_total counter")
 	sources := make([]string, 0, len(sourceFailures))
 	for s := range sourceFailures {
 		sources = append(sources, s)
 	}
 	sort.Strings(sources)
 	for _, s := range sources {
-		fmt.Fprintf(w, "assay_source_failures_total{source=\"%s\"} %d\n", escapePrometheusLabelValue(s), sourceFailures[s])
+		_, _ = fmt.Fprintf(w, "assay_source_failures_total{source=\"%s\"} %d\n", escapePrometheusLabelValue(s), sourceFailures[s])
 	}
 }
