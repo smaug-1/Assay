@@ -14,6 +14,7 @@ nowhere to put one.
 type Check interface {
     ID() string
     Describe() string
+    Inputs() []string // Subject fields the check reads
     Run(ctx context.Context, s *Subject) (Finding, error)
 }
 ```

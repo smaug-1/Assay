@@ -25,7 +25,7 @@ usage:
   assay verify-preimage [-version VERSION] HASH PREIMAGE
                                   compare a stored hash with canonical preimage bytes
   assay checks                    print every check's ID and description
-  assay serve [-addr] [-history PATH] [-observe FILE] [-observe-interval DURATION]
+  assay serve [-addr] [-history PATH] [-history-retention N] [-observe FILE] [-observe-interval DURATION]
                                   serve the HTTP API and UI
   assay version                   print scanner identity, preimage encodings
                                   and build (VCS, Go) information
@@ -33,7 +33,7 @@ usage:
 Commands that scan also accept:
   -cache-directory-ttl D   reuse a curated directory answer for D (0 disables)
   -cache-blocklist-ttl D   reuse a blocklist answer for D (0 disables)
-  -no-cache                re-fetch curated sources on every scan
+  -no-cache                re-fetch curated sources and asset lists on every scan
 
 Commands that consume SEP-0042 asset lists (scan, attestation, history, serve)
 also accept:
@@ -66,6 +66,7 @@ The verify command additionally accepts:
   -network NAME           network used to derive the SAC id (env ASSAY_NETWORK)
 
 The serve command additionally accepts:
+  -history-retention N    observations kept per asset (default 256)
   -observe FILE           path to asset list file for scheduled observation
   -observe-interval DURATION
                           interval between scheduled scans (default 6h)
@@ -363,6 +364,7 @@ see `docs/integrating.md` for what a consumer reads out of it, and
 ```
 ./assay serve -addr :8080
 ./assay serve -addr :8080 -history /var/lib/assay/history.jsonl
+./assay serve -addr :8080 -history /var/lib/assay/history.jsonl -history-retention 1024
 ./assay serve -addr :8080 -scan-rate 10 -scan-burst 20
 ```
 
@@ -370,7 +372,9 @@ Each successful `GET /api/v1/scan` records an observation, and
 `GET /api/v1/history?asset=CODE-ISSUER` returns them in time order with the
 derived transitions. `-history` points that store at an append-only JSON Lines
 log so it survives a restart; without it, history is in memory and lost when the
-process exits. The default retention is 256 observations per asset and the
+process exits. `-history-retention N` sets how many observations are kept per
+asset, for both the in-memory and the file-backed store; the default is 256 and
+`GET /api/v1/history` reports the configured value as `retention`. The full
 policy is in [history.md](history.md).
 
 **Rate limiting.** `GET /api/v1/exposure` is always rate-limited (default: 5
